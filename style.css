@@ -1,0 +1,136 @@
+h1 {
+  font-family: sans-serif;
+  pading-left: 10px;
+}
+.header > * {
+  display: inline-block;
+}
+#menu, #image_diff_wrapper {
+  display: inline-block;
+  vertical-align: top;
+  height: 600px;
+  border: 1px solid #555;
+}
+#menu {
+  width: 40%;
+  overflow: hidden;
+}
+#file_list {
+  overflow: scroll;
+  height: 567px;
+}
+#file_list h4 {
+  padding: 10px 5px;
+  margin: 0;
+  background: #999;
+  color: #333;
+  font-family: sans-serif;
+  letter-spacing: .25px;
+}
+#file_list table {
+  width: 100%;
+  border-spacing: 0;
+  margin-bottom: 20px;
+}
+#file_list table tr {
+  border-bottom: 2px solid white;
+}
+#file_list table tr:hover,
+#file_list table tr.active {
+  cursor: pointer;
+  background: #BBB;
+}
+#file_list table td {
+  vertical-align: top;
+  border-top: 2px solid white;
+}
+#file_list table tr:nth-child(1) td {
+  border-top: 0;
+}
+#file_list table td:nth-child(1) {
+  padding-left: 10px;
+}
+#file_list table td:nth-child(2) {
+  width: 20%;
+}
+#file_list table td:nth-child(3) {
+  width: 10%;
+}
+#file_list #title_file_list_diff {
+  background: #D46A6A;
+}
+#file_list #title_file_list_reg {
+  background: #F9BD02;
+}
+#file_list #file_list_diff tr:hover,
+#file_list #file_list_diff tr.active {
+  background: #FCA5A5;
+}
+#file_list #file_list_reg tr:hover,
+#file_list #file_list_reg tr.active {
+  background: #FBD767;
+}
+
+.tag {
+  display: block;
+  padding: 0 10px;
+  margin: 1px 10px;
+  background: #AAA;
+  border-radius: 15px;
+  color: #333;
+  font-size: .8em;
+  text-align: center;
+}
+.tag.tag-fullwidth { background: #6ac1d4; }
+.tag.tag-midwidth { background: #87e38d; }
+.tag.tag-narrow { background: #dfda68; }
+.tag.tag-tiny { background: #9174a9; }
+
+#env_menu ul {
+  padding: 0;
+  margin: 0;
+  display: table;
+  width: 100%;
+  list-style: none;
+  table-layout: fixed;
+}
+#env_menu li {
+  display: table-cell;
+  text-align: center;
+  border: 1px solid #555;
+  border-top: 0;
+  border-left: 0;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#env_menu li:last-child {
+  border-right: 0;
+}
+#env_menu li a {
+  padding: 8px;
+  display: block;
+  text-decoration: none;
+  color: #333;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+#env_menu li a.active {
+  background-color: #AAA;
+  color: #FFF;
+}
+#env_menu li a:hover,
+#env_menu li a:active {
+  background-color: #555;
+  color: #FFF;
+}
+#image_diff_wrapper {
+  width: 59%;
+  text-align: center;
+}
+#image_diff {
+  max-width:100%;
+  max-height:100%;
+  vertical-align: middle;
+}
