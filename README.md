@@ -22,3 +22,8 @@
   * gulp => runs visual regression tests against production environment
   * gulp --env=stage => runs visual regression tests against stage environment
   * gulp reset-baselines --env=dev => resets baselines for the dev environment
+
+## Test Examples:
+  * global.js - Basic testing of components
+  * homepage.js - Testing pages with dynamic content. Here we execute jQuery prior to screenshots to hide dynamic content that could throw off our tests
+  * office_hompeages.js - Executing tests against a set of pages. Here we have a list of office pages and we run a single test against each.
