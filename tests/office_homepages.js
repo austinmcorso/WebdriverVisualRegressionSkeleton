@@ -1,9 +1,12 @@
-var assert = require('assert');
+var capture = require('./inc/capture.js');
 
 var offices = [
-  'office_1',
-  'office_2',
-  'office_3'
+ // 'office_1',
+  //'office_2',
+  //'office_3'
+  'eere/ssl',
+  'eere/spo',
+  'ehss'
 ];
 
 describe("Office Homepage Component Tests", function() {
@@ -22,10 +25,7 @@ describe("Office Homepage Component Tests", function() {
         .webdrivercss('office-' + officeName + '-homepage', {
           name: testName,
           elem: '#content-wrapper',
-        }, function(err, res) {
-          assert.ifError(err);
-          assert.ok(res[testName][0].isWithinMisMatchTolerance);
-        })
+        }, function(err, res) { capture(testName, err, res) })
         .call(done);
     });
   });

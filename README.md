@@ -10,11 +10,12 @@
   * npm install
   * selenium-standalone install
 1. Define enviornment URL's in environments.json
+  * Keys are the environment name, value is the url
   * Note: If the environment requires auth use the following pattern to define the URL:"http://user:pass@domain.com"
 
 ## Start Selenium:
-1. Check if selenium is already running
-  * ps aux | grep selenium
+1. Start Selenium
+  * Check if selenium and/or xvfb is already running and kill process if necessary
 1. Start selenium through x-frame in separate terminal or as background process
   * xvfb-run --server-args="-screen 0, 1366x768x24" selenium-standalone start
 
@@ -33,3 +34,4 @@ When originally starting my dive into visual regression testing last year I util
   * [Visual Regression Testing: How to Test Dynamic Content with PhantomCSS](https://www.phase2technology.com/blog/visual-regression-testing-how-to-test-dynamic-content-with-phantomcss/)
   * [Visual Regression Testing Part 2: Extending Grunt-PhantomCSS for Multiple Environments](https://www.phase2technology.com/blog/visual-regression-testing-part-2-extending-grunt-phantomcss-for-multiple-environments/)
   * [Visual Regression Testing Part 3: Integrating PhantomCSS and Grunt with Jenkins](https://www.phase2technology.com/blog/visual-regression-testing-part-3-integrating-phantomcss-and-grunt-with-jenkins/)
+

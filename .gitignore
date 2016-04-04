@@ -1,0 +1,4 @@
+ui-testing/results/*
+ui-testing/node_modules
+ui-testing/npm-debug.log
+ui-testing/environments.json

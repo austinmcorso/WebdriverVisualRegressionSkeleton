@@ -1,31 +1,27 @@
-var assert = require('assert');
+var capture = require('./inc/capture.js');
 
 describe("Global Component Tests", function() {
   this.timeout(60000);
 
   it('should display the header as expected', function(done) {
+    var testName = 'header';
     browser
       .url(browser.options.baseUrl)
       .webdrivercss('global', {
-        name: 'header',
+        name: testName,
         elem: '#header-wrapper'
-      }, function(err, res) {
-        assert.ifError(err);
-        assert.ok(res.header[0].isWithinMisMatchTolerance);
-      })
+      }, function(err, res) { capture(testName, err, res) })
       .call(done);
   });
 
   it('should display the footer as expected', function(done) {
+    var testName = 'footer';
     browser
       .url(browser.options.baseUrl)
       .webdrivercss('global', {
-        name: 'footer',
+        name: testName,
         elem: '#footer-nav-wrapper'
-      }, function(err, res) {
-        assert.ifError(err);
-        assert.ok(res.footer[0].isWithinMisMatchTolerance);
-      })
+      }, function(err, res) { capture(testName, err, res) })
       .call(done);
   });
 

@@ -2,43 +2,15 @@
 var selected;
 
 window.onload = function () {
-  // Consts so JS won't have to load more than once.
+  // Sudo consts so JS won't have to load more than once.
   RESULTS = Array.prototype.slice.call(document.getElementsByClassName('result'));
   HEADERS = Array.prototype.slice.call(document.getElementsByTagName('h4'));
   FILTERS = Array.prototype.slice.call(document.getElementsByClassName("env"));
   RESULTSLEN = RESULTS.length;
 
-  // Load image on load.
+  // Load image and filter on load.
   loadImage();
-
-  // Update URL on result click.
-  var resultClick = function() {
-    document.location = this.dataset.href;
-  };
-
-  // Filter by env.
-  var filter = function() {
-    var i;
-    for (i=0; i<RESULTSLEN; i++) {
-      if (this.id === 'all' || RESULTS[i].dataset.href.toLowerCase().indexOf('/' + this.id + '/') > -1) {
-        RESULTS[i].style.display = 'table-row';
-      } else {
-        RESULTS[i].style.display = 'none';
-      }
-    }
-
-    // Hide headers if no items within associated list by checking list's height.
-    env = this.id.charAt(0).toUpperCase() + this.id.slice(1);
-    for (i=0; i<HEADERS.length; i++) {
-      HEADERS[i].firstChild.innerHTML = env;
-    }
-
-    // Highlight filter.
-    for (i=0; i<FILTERS.length; i++) {
-      FILTERS[i].className = "env";
-    }
-    this.className = "env active";
-  };
+  if (FILTERS.length > 1) filter.call(FILTERS[0]);
 
   // Add listener to results.
   for (i=0; i<RESULTSLEN; i++) {
@@ -80,6 +52,38 @@ window.onhashchange = function () {
   loadImage();
 };
 
+// Update URL on result click.
+function resultClick() {
+  document.location = this.dataset.href;
+};
+
+// Filter by env.
+function filter() {
+  var i;
+
+  for (i=0; i<RESULTSLEN; i++) {
+    if (RESULTS[i].dataset.href.toLowerCase().indexOf('/' + this.id + '/') > -1) {
+      RESULTS[i].style.display = 'table-row';
+    } else {
+      RESULTS[i].style.display = 'none';
+    }
+  }
+
+  for (i=0; i<HEADERS.length; i++) {
+    if (HEADERS[i].id.indexOf(this.id) !== -1) {
+      HEADERS[i].style.display = 'block';
+    } else {
+      HEADERS[i].style.display = 'none';
+    }
+  }
+
+  // Highlight filter.
+  for (i=0; i<FILTERS.length; i++) {
+    FILTERS[i].className = "env";
+  }
+  this.className = "env active";
+};
+
 // Load image.
 function loadImage() {
   var found = false;
@@ -101,3 +105,4 @@ function loadImage() {
     document.getElementById('image_diff').src = href;
   }
 }
+

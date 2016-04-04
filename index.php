@@ -1,70 +1,77 @@
 <?php
 /**
  * @file
- * Provides ordered links to visular regression test results.
+ * Provides ordered links to visual regression test results.
  */
 
-// Load all the .png files.
-$files = array_merge(glob_recursive('results/**/*.png'));
+$files = glob_recursive('results/**/*.png');
+usort($files, function($a, $b) {
+  return filemtime($a) < filemtime($b);
+});
+$envs = json_decode(file_get_contents('environments.json'), true);
 
-// Error message if no tests are found.
-if (empty($files)) {
+// Error message if no tests or envs are found.
+if (empty($files) || empty($envs)) {
   print '<h1>Visual Regression Test Results</h1>';
   print '<h4>No tests found within ' . getcwd() . '</h4>';
   return;
 }
 
-// Sort the files by modification/creation date.
-usort($files, function($a, $b) {
-  return filemtime($a) < filemtime($b);
-});
+print_page(sort_files($files, $envs));
 
-// Define environments and file count for each.
-$envs = array(
-  'local' => 0,
-  'dev' => 0,
-  'stage' => 0,
-  'prod' => 0
-);
+/**
+ * Organize files by environment and type.
+ */
+function sort_files($files, $envs) {
+  $env_files = [];
+  foreach ($envs as $i => $key) {
+    $env_files[$i] = [
+      'baselines' => [],
+      'failures' => [],
+      'diffs' => []
+    ];
+  }
 
-// Organize the files by fail/pass/baseline.
-$files_fail = array();
-$files_diff = array();
-foreach ($files as $i => $file) {
-  // Determine test env for file and increment env count.
-  $urlarray = explode("/", $file);
-  $env = $urlarray[count($urlarray)-3];
-  $envs[$env]++;
-  if (strpos($file, '.regression') !== FALSE) {
+  foreach ($files as $i => $file) {
+    $urlarray = explode("/", $file);
+    $env = $urlarray[count($urlarray)-3];
     unset($files[$i]);
-    $files_fail[] = $file;
+
+    if (strpos($file, '.regression') !== FALSE) {
+      $env_files[$env]['failures'][] = $file;
+    }
+    elseif (strpos($file, '.diff') !== FALSE) {
+      $env_files[$env]['diffs'][] = $file;
+    }
+    elseif (strpos($file, '.baseline') !== FALSE) {
+      $env_files[$env]['baselines'][] = $file;
+    }
   }
-  elseif (strpos($file, '.diff') !== FALSE) {
-    unset($files[$i]);
-    $files_diff[] = $file;
-  }
-  elseif (strpos($file, '.baseline') === FALSE) {
-    unset($files[$i]);
-  }
+
+  return $env_files;
 }
 
-// Print output.
-print "<link rel='stylesheet' type='text/css' href='./style.css'>";
-print "<script src='index.js'></script>";
-print "<div class='header'>";
-print '<h1>Visual Regression Test Results</h1>';
-print "</div>";
-print "<div id='menu'>";
-printFilters($envs);
-print "<div id='file_list'>";
-printLinks($files_diff, 'Failure Diffs:', 'file_list_diff');
-printLinks($files_fail, 'Regressions:', 'file_list_reg');
-printLinks($files, 'Baselines:', 'file_list_all');
-print "</div>";
-print "</div>";
-print "<div id='image_diff_wrapper'>";
-print "<img id='image_diff'>";
-print "</div>";
+/**
+ * Print page.
+ */
+function print_page($files) {
+  print "<link rel='stylesheet' type='text/css' href='./style.css'>";
+  print "<script src='index.js'></script>";
+  print "<div class='header'>";
+  print '<h1>Visual Regression Test Results</h1>';
+  print "</div>";
+  print "<div id='menu'>";
+  printFilters($files);
+  print "<div id='file_list'>";
+  foreach (array_keys($files) as $env) {
+    printLinks($files[$env], $env);
+  }
+  print "</div>";
+  print "</div>";
+  print "<div id='image_diff_wrapper'>";
+  print "<img id='image_diff'>";
+  print "</div>";
+}
 
 /**
  * Recursive search for pattern.
@@ -97,37 +104,52 @@ function friendlyURL($inputString){
 /**
  * Format links and print.
  */
-function printLinks($files, $heading, $id = NULL) {
-  if (empty($files)) {
-    return;
+function printLinks($files, $env) {
+  if (empty($files['baselines'])) return;
+
+  $test_logs = json_decode(file_get_contents('./results/' . $env . '/test-results.json'), true);
+
+  if (empty($files['failures'])) {
+    if (empty($test_logs)) {
+      $msg = "No Comparissons Run";
+      $class = 'title_info';
+    } else {
+      $msg = "All Tests Passing!";
+      $class = 'title_passing';
+    }
+
+    print "<h4 id='title_" . $env . "' class='" . $class . "'><span class='title_env'>" . $env . ":</span> " . $msg . "</h4>";
   }
 
-  print "<h4";
-  print (!is_null($id) ? " id='title_" . $id : "");
-  print "'><span class='title_env'>All</span> " . $heading ."</h4>";
-  print (!is_null($id) ? "<table id='" . $id . "'>" : "<table>");
-  foreach ($files as $file) {
-    $fileData = stat($file);
-    $fileComponents = explode("/", ltrim($file, "./")); // Trim leading dots and slashes. Split file path into components.
-    $fileComponentsCount = count($fileComponents);
-    $fileName = $fileComponents[$fileComponentsCount - 1];
-    print '<tr class="result" data-href="#' . friendlyURL($file) . '">';
-    print '<td>' . $fileName . '</td>';
-    print '<td>' . date('Y-m-d H:i:s', $fileData['mtime']) . '</td>';
-    print '</tr>';
+  foreach (array_keys($files) as $file_type) {
+    if (empty($files[$file_type])) continue;
+
+    print "<h4 id='title_" . $env . "' class=title_" . $file_type . "'><span class='title_env'>" . $env . ":</span> " . $file_type . "</h4>";
+    print "<table id='" . $env . "_" . $file_type . "'>";
+    foreach ($files[$file_type] as $file) {
+      $fileData = stat($file);
+      $fileComponents = explode("/", ltrim($file, "./")); // Trim leading dots and slashes. Split file path into components.
+      $fileComponentsCount = count($fileComponents);
+      $fileName = $fileComponents[$fileComponentsCount - 1];
+      print '<tr class="result" data-href="#' . friendlyURL($file) . '">';
+      print '<td>' . $fileName . '</td>';
+      print '<td>' . date('Y-m-d H:i:s', $fileData['mtime']) . '</td>';
+      print '</tr>';
+    }
+    print '</table>';
   }
-  print '</table>';
 }
 
 /**
  * Format filters and print.
  */
-function printFilters($envs) {
+function printFilters($files) {
   $filters = array();
 
   // Only add filter to list if sceenshot exists for it.
-  foreach ($envs as $env => $env_count) {
-    if ($env_count > 0) {
+  foreach ($files as $env => $env_files) {
+    $count = count($env_files, 1) - 3;
+    if ($count) {
       $filters[] = "<li><a class='env' id='" . $env . "'>" . ucfirst($env) . "</a></li>";
     }
   }
@@ -135,10 +157,10 @@ function printFilters($envs) {
   // Only display list of filters if more than one filter is available.
   if (count($filters) > 1) {
     print "<div id='env_menu'><ul>";
-    print "<li><a class='env active' id='all'>All</a></li>";
     foreach ($filters as $filter) {
       print $filter;
     }
     print "</ul></div>";
   }
 }
+

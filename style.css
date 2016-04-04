@@ -26,11 +26,12 @@ h1 {
   color: #333;
   font-family: sans-serif;
   letter-spacing: .25px;
+  text-transform: capitalize;
 }
 #file_list table {
   width: 100%;
   border-spacing: 0;
-  margin-bottom: 20px;
+  table-layout: fixed;
 }
 #file_list table tr {
   border-bottom: 2px solid white;
@@ -56,18 +57,22 @@ h1 {
 #file_list table td:nth-child(3) {
   width: 10%;
 }
-#file_list #title_file_list_diff {
+#file_list .title_diffs {
   background: #D46A6A;
 }
-#file_list #title_file_list_reg {
+#file_list .title_passing {
+  background: #62C34A;
+}
+#file_list .title_info,
+#file_list .title_failures {
   background: #F9BD02;
 }
-#file_list #file_list_diff tr:hover,
-#file_list #file_list_diff tr.active {
+#file_list .title_diffs tr:hover,
+#file_list .title_diffs tr.active {
   background: #FCA5A5;
 }
-#file_list #file_list_reg tr:hover,
-#file_list #file_list_reg tr.active {
+#file_list .title_failures tr:hover,
+#file_list .title_failures tr.active {
   background: #FBD767;
 }
 
